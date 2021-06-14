@@ -1,0 +1,8 @@
+
+Univariate
+0.6881056574090227 is the RMSE for the Train Data
+0.695425799213651 is the RMSE for the Test Data
+
+Multivariate
+0.040004000600100016 is the RMSE for the Train Data
+0.4298274056208201 is the RMSE for the Test Data
