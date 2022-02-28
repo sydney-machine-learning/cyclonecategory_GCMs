@@ -1,2 +1,2 @@
 # cyclonecatgoryprediction
-Understanding cyclone formation and category prediction using deep learning
+Understanding cyclone genesis and decade ahead estiation with sea surface temperature using deep learning
