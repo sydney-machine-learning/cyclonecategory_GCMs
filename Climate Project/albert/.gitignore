@@ -1,0 +1,12 @@
+*.log
+*.csv
+*.dat
+*.nc
+*.txt
+*.png
+*.jpg
+*.gif
+*DS_Store
+*.joblib
+*.pyc
+*.jpg

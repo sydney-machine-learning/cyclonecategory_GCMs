@@ -34,6 +34,6 @@ df.insert(0,'id',0)
 
 df_sorted = df.sort_values(by=['Time', 'No. of Cycl'])
 new_df = add_cyclone_ids(df_sorted)
-new_df.to_csv('with_ids.csv', index=False)
+new_df.to_csv(csv_path+'_with_ids.csv', index=False)
 
 
