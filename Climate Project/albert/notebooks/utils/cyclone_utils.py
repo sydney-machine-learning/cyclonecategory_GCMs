@@ -7,7 +7,7 @@ def kmh_to_knots(kmh):
 
 def get_category(wind_speed_kn):
     """
-    get a cyclone's current classified category based on its wind speed in knots
+    get a cyclone's current SAFFIR SIMPSON classified category based on its wind speed in knots
     """
     if wind_speed_kn < kmh_to_knots(125):
         return 1
@@ -44,7 +44,7 @@ def time_to_season(dt: datetime):
     return f'{dt.year}-{dt.year + 1}'
 
 def get_datetime(timestamp):
-    return datetime.strptime(timestamp, '%Y-%m-%d %X')
+    return datetime.fromisoformat(timestamp)
 
 def get_cyclone_data(basin=None, min_cat=None, one_per_id=False):
     """
