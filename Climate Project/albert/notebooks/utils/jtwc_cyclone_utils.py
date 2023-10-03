@@ -33,4 +33,4 @@ def get_southern_hem_data(one_per_id = False):
 def get_all_cyclones(one_per_id = False):
     south_df = get_southern_hem_data(one_per_id)
     nwp_df = get_NWP_data(one_per_id)
-    return pd.concat([south_df, nwp_df]).sort_values(by=['Season', 'SEASON TC NUMBER', 'BASIN'])
+    return pd.concat([south_df, nwp_df], ignore_index=True).sort_values(by=['Season', 'SEASON TC NUMBER', 'BASIN'])

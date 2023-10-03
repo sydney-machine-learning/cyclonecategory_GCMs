@@ -61,9 +61,10 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     df = pd.read_csv(input_path)
 
     df = df.dropna(subset=['VMAX (kt)'])
-    df = df.loc[int_vec((df.loc[:,'VMAX (kt)']) >= 35) & (df.loc[:,'Season'] >= 1982 )]
+    # get post-satellite data. some cyclones also have junk numbers in their VMAX observations
+    df = df.loc[(df.loc[:,'Season'] >= 1982) & (df.loc[:, 'VMAX (kt)'] >= 10) & (df.loc[:, 'VMAX (kt)'] <= 200)]
     df = df.loc[:, ['BASIN', 'Season', 'SEASON TC NUMBER', 'TIME (YYYYMMMDDHH)', 'STORMNAME', 'LAT (1/10 degrees)', 'LON (1/10 degrees)', 'VMAX (kt)', 'MSLP (MB)', 'TY' , 'TECH']]
-
+    df['SEASON TC NUMBER'] = df['SEASON TC NUMBER'].apply(int)
     # convert degrees
     df['Latitude (degrees)'] = df['LAT (1/10 degrees)'].apply(lambda x: get_lat_lon_float(x))
     df['Longitude (degrees)'] = df['LON (1/10 degrees)'].apply(lambda x: get_lat_lon_float(x))
@@ -93,10 +94,14 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     ## DROP DUPLICATE OBSERVATIONS (TIME AND STORM)
     df = df.drop_duplicates(subset=['Storm ID', 'Time'])
 
-    ## INTERPOLATE DATA FOR MISSING HOURS...
-    df = df.set_index('timestamp').groupby('Storm ID').resample('6H').asfreq().fillna(0).drop('Storm ID', axis=1).reset_index()
 
-    
+    # Northern Hemisphere 1985 storm 16 is pathological.... WHY IS THE DATA SO BAD????
+    df = df.loc[df.loc[:, 'Storm ID'] != '1983-N-16']
+
+
+    ## INTERPOLATE DATA FOR MISSING HOURS...
+    df = df.set_index('timestamp').groupby('Storm ID').resample('6H').interpolate().fillna(method='ffill').drop('Storm ID', axis=1).reset_index()
+
     # print(f'number of TCs with gaps in observations: {with_gaps.shape[0]}')
     # df = df.loc[df.loc[:, 'max_timegap'] == 6]
     
@@ -106,11 +111,13 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     df['Peak VMAX (kt)'] = df.groupby('Storm ID')['VMAX (kt)'].transform('max')
 
     grouped_ssq = df.groupby(by="Storm ID")['VMAX (kt)'].agg(lambda x: sum(x**2)/100000)
-    df = df.join(grouped_ssq, on='Storm ID', rsuffix="_ssq") ##
+    df = df.join(grouped_ssq, on='Storm ID', rsuffix="_ssq") 
     df = df.rename(columns={'VMAX (kt)_ssq': 'ACE'})
 
-    df['Maximum 24h Intensification'] = df.groupby(by='Storm ID')['VMAX (kt)'].transform(get_max_24h_intensification)
+    df['Maximum 24h Intensification'] = df.groupby(by='Storm ID')['VMAX (kt)'].transform(get_max_24h_intensification) 
     # one_per_id_with_ri = all_cyclone_datapoints.drop_duplicates(subset='Storm ID')
+    df = df.loc[df.loc[:,'Peak VMAX (kt)'] >= 40]
+    df = df.sort_values(by=['Season', 'SEASON TC NUMBER', 'timestamp'])
     df = df.loc[:, ['timestamp', 'Storm ID', 'BASIN', 'Season', 'SEASON TC NUMBER', 'STORMNAME', 'Latitude (degrees)', 'Longitude (degrees)', 'VMAX (kt)', 'Peak VMAX (kt)', 'ACE', 'Maximum 24h Intensification']]
     
     df.to_csv(output_path, index=False)
