@@ -14,6 +14,11 @@ def get_historical_ssts(basin=None):
         return monthly_avg_ssts.sel(lon=slice(SI_MIN, SI_MAX))
     return monthly_avg_ssts
 
+
+def get_cmip_historical():
+    monthly_avg_ssts = xr.open_dataset('../SST_data/CMIP/CMIP_historical_Omon_tos-mean.nc', engine='netcdf4')
+    return monthly_avg_ssts
+
 def get_tropical_avg(sst_xarray):
      """ Takes a whole xarray dataset """
      return sst_xarray.sel(lat=slice(-10,10)).mean(dim=['lon', 'lat'])
