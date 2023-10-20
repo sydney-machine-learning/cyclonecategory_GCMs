@@ -1,5 +1,4 @@
 *.log
-*.csv
 *.dat
 *.nc
 *.txt
@@ -9,4 +8,3 @@
 *DS_Store
 *.joblib
 *.pyc
-*.jpg

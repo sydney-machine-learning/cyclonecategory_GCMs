@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from common import SI_MIN, SI_MAX, AUS_MIN, AUS_MAX, SP_MIN, SP_MAX
+from common import SI_MIN, SI_MAX, SP_MIN, SP_MAX
 
 ## DATA CLEANING TODO LIST:
 # - best tracks only
@@ -63,7 +63,7 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     df = df.dropna(subset=['VMAX (kt)'])
     # get post-satellite data. some cyclones also have junk numbers in their VMAX observations
     df = df.loc[(df.loc[:,'Season'] >= 1982) & (df.loc[:, 'VMAX (kt)'] >= 10) & (df.loc[:, 'VMAX (kt)'] <= 200)]
-    df = df.loc[:, ['BASIN', 'Season', 'SEASON TC NUMBER', 'TIME (YYYYMMMDDHH)', 'STORMNAME', 'LAT (1/10 degrees)', 'LON (1/10 degrees)', 'VMAX (kt)', 'MSLP (MB)', 'TY' , 'TECH']]
+    df = df.loc[:, ['BASIN', 'Season', 'SEASON TC NUMBER', 'TIME (YYYYMMMDDHH)', 'LAT (1/10 degrees)', 'LON (1/10 degrees)', 'VMAX (kt)', 'MSLP (MB)', 'TY' , 'TECH']]
     df['SEASON TC NUMBER'] = df['SEASON TC NUMBER'].apply(int)
     # convert degrees
     df['Latitude (degrees)'] = df['LAT (1/10 degrees)'].apply(lambda x: get_lat_lon_float(x))
@@ -72,7 +72,7 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     # more specific southern hemisphere basin
     if is_southern_hemisphere:
         df.loc[(df.loc[:,'Longitude (degrees)'] >= SI_MIN) & (df.loc[:,'Longitude (degrees)'] < SI_MAX), 'BASIN'] ='SI'
-        df.loc[(df.loc[:,'Longitude (degrees)'] >= AUS_MIN) & (df.loc[:,'Longitude (degrees)'] < AUS_MAX), 'BASIN'] ='AUS'
+        # df.loc[(df.loc[:,'Longitude (degrees)'] >= AUS_MIN) & (df.loc[:,'Longitude (degrees)'] < AUS_MAX), 'BASIN'] ='AUS'
         df.loc[(df.loc[:,'Longitude (degrees)'] >= SP_MIN) & (df.loc[:,'Longitude (degrees)'] < SP_MAX), 'BASIN'] = 'SP'
 
     # DATA CONTAINS SOME 3HOUR OBSERVATIONS, only take 00:00, 06:00, 12:00, 18:00
@@ -118,7 +118,7 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     # one_per_id_with_ri = all_cyclone_datapoints.drop_duplicates(subset='Storm ID')
     df = df.loc[df.loc[:,'Peak VMAX (kt)'] >= 40]
     df = df.sort_values(by=['Season', 'SEASON TC NUMBER', 'timestamp'])
-    df = df.loc[:, ['timestamp', 'Storm ID', 'BASIN', 'Season', 'SEASON TC NUMBER', 'STORMNAME', 'Latitude (degrees)', 'Longitude (degrees)', 'VMAX (kt)', 'Peak VMAX (kt)', 'ACE', 'Maximum 24h Intensification']]
+    df = df.loc[:, ['timestamp', 'Storm ID', 'BASIN', 'Season', 'SEASON TC NUMBER', 'Latitude (degrees)', 'Longitude (degrees)', 'VMAX (kt)', 'Peak VMAX (kt)', 'ACE', 'Maximum 24h Intensification']]
     
     df.to_csv(output_path, index=False)
 
