@@ -120,6 +120,24 @@ def clean_df(input_path, output_path, is_southern_hemisphere=False):
     df = df.sort_values(by=['Season', 'SEASON TC NUMBER', 'timestamp'])
     df = df.loc[:, ['timestamp', 'Storm ID', 'BASIN', 'Season', 'SEASON TC NUMBER', 'Latitude (degrees)', 'Longitude (degrees)', 'VMAX (kt)', 'Peak VMAX (kt)', 'ACE', 'Maximum 24h Intensification']]
     
+    print('time:')
+    print(f'min: {df["timestamp"].min()}')
+    print(f'max: {df["timestamp"].max()}')
+
+    print('latitude:')
+    print(f'min: {df["Latitude (degrees)"].min()}')
+    print(f'max: {df["Latitude (degrees)"].max()}')
+
+    print('longitude')
+    print(f'min: {df["Longitude (degrees)"].min()}')
+    print(f'max: {df["Longitude (degrees)"].max()}')
+
+    print('vmax:')
+    print(f'min: {df["VMAX (kt)"].min()}')
+    print(f'max: {df["VMAX (kt)"].max()}')
+
+  
+
     df.to_csv(output_path, index=False)
 
 

@@ -14,14 +14,17 @@ def get_historical_ssts(basin=None):
         return monthly_avg_ssts.sel(lon=slice(SI_MIN, SI_MAX))
     return monthly_avg_ssts
 
+def get_cmip_prediction(forcing_num):
+      monthly_avg_ssts = xr.open_dataset(f'../SST_data/CMIP/CMIP_ssp{forcing_num}_Omon_tos-mean.nc', engine='netcdf4')
+      return monthly_avg_ssts['tos_mean_mean'].rename({'latitude': 'lat', 'longitude': 'lon'})
 
 def get_cmip_historical():
     monthly_avg_ssts = xr.open_dataset('../SST_data/CMIP/CMIP_historical_Omon_tos-mean.nc', engine='netcdf4')
-    return monthly_avg_ssts
+    return monthly_avg_ssts['tos_mean_mean'].rename({'latitude': 'lat', 'longitude': 'lon'})
 
 def get_tropical_avg(sst_xarray):
      """ Takes a whole xarray dataset """
-     return sst_xarray.sel(lat=slice(-10,10)).mean(dim=['lon', 'lat'])
+     return sst_xarray.sel(lat=slice(-20,20)).mean(dim=['lon', 'lat'])
 
 def sel_mm_yyyyy(sst_xarray, mm, yyyy):
     """ Takes a single_variable x-array, returns boolean array that you can use in .sel()"""
